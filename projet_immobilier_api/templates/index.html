@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Prédiction Prix Immobilier Paris</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            padding: 12px;
+            background: #fadbd8;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #555;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Prédicteur Immobilier Paris</h1>
+        <p class="subtitle">Estimez le prix au m² d'un bien immobilier à Paris</p>
+        
+        <div class="info-box">
+             Remplissez les informations du bien pour obtenir une estimation du prix au m²
+        </div>
+        
+        <form id="predictionForm">
+            <!-- Ligne 1 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="surface_reelle_bati">Surface bâtie (m²) *</label>
+                    <input type="number" id="surface_reelle_bati" name="surface_reelle_bati" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="surface_terrain">Surface terrain (m²)</label>
+                    <input type="number" id="surface_terrain" name="surface_terrain" step="0.1">
+                </div>
+            </div>
+            
+            <!-- Ligne 2 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombre_pieces_principales">Nb pièces principales *</label>
+                    <input type="number" id="nombre_pieces_principales" name="nombre_pieces_principales" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="nombre_lots">Nombre de lots *</label>
+                    <input type="number" id="nombre_lots" name="nombre_lots" min="1" value="1" required>
+                </div>
+            </div>
+            
+            <!-- Ligne 3 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="surface_totale">Surface totale (m²) *</label>
+                    <input type="number" id="surface_totale" name="surface_totale" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="arrondissement">Arrondissement *</label>
+                    <input type="number" id="arrondissement" name="arrondissement" min="1" max="20" required>
+                </div>
+            </div>
+            
+            <!-- Ligne 4 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="annee">Année de transaction *</label>
+                    <input type="number" id="annee" name="annee" min="2000" max="2030" required>
+                </div>
+                <div class="form-group">
+                    <label for="mois">Mois *</label>
+                    <select id="mois" name="mois" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="1">Janvier</option>
+                        <option value="2">Février</option>
+                        <option value="3">Mars</option>
+                        <option value="4">Avril</option>
+                        <option value="5">Mai</option>
+                        <option value="6">Juin</option>
+                        <option value="7">Juillet</option>
+                        <option value="8">Août</option>
+                        <option value="9">Septembre</option>
+                        <option value="10">Octobre</option>
+                        <option value="11">Novembre</option>
+                        <option value="12">Décembre</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Ligne 5 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="code_postal">Code postal *</label>
+                    <input type="number" id="code_postal" name="code_postal" min="75000" max="75020" required>
+                </div>
+                <div class="form-group">
+                    <label for="distance_center_km">Distance centre (km) *</label>
+                    <input type="number" id="distance_center_km" name="distance_center_km" step="0.1" min="0" required>
+                </div>
+            </div>
+            
+            <!-- Ligne 6 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="latitude">Latitude *</label>
+                    <input type="number" id="latitude" name="latitude" step="0.00001" required>
+                </div>
+                <div class="form-group">
+                    <label for="longitude">Longitude *</label>
+                    <input type="number" id="longitude" name="longitude" step="0.00001" required>
+                </div>
+            </div>
+            
+            <!-- Ligne 7 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="type_local">Type de bien *</label>
+                    <select id="type_local" name="type_local" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="Appartement">Appartement</option>
+                        <option value="Maison">Maison</option>
+                        <option value="Terrain">Terrain</option>
+                        <option value="Local commercial">Local commercial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="nature_mutation">Type de transaction *</label>
+                    <select id="nature_mutation" name="nature_mutation" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="Vente">Vente</option>
+                        <option value="Échange">Échange</option>
+                        <option value="Apport">Apport</option>
+                        <option value="Partage">Partage</option>
+                        <option value="Expropriation">Expropriation</option>
+                        <option value="Dation">Dation</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit">📊 Prédire le prix</button>
+        </form>
+        
+        <div id="loading" class="loading">
+            ⏳ Calcul en cours...
+        </div>
+        
+        <div id="error" class="error"></div>
+        
+        <div id="result" class="result">
+            <div class="result-item">
+                <span class="result-label"> Prix estimé au m²</span>
+                <span class="result-value" id="predictionValue">---</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label"> Prix total estimé</span>
+                <span class="result-value" id="totalValue">---</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label"> Surface considérée</span>
+                <span class="result-value" id="surfaceValue">---</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Récupérer les données
+            const formData = new FormData(this);
+            const data = {
+                surface_reelle_bati: parseFloat(formData.get('surface_reelle_bati')),
+                surface_terrain: formData.get('surface_terrain') ? parseFloat(formData.get('surface_terrain')) : null,
+                nombre_pieces_principales: parseFloat(formData.get('nombre_pieces_principales')),
+                nombre_lots: parseFloat(formData.get('nombre_lots')),
+                surface_totale: parseFloat(formData.get('surface_totale')),
+                annee: parseInt(formData.get('annee')),
+                mois: parseInt(formData.get('mois')),
+                arrondissement: parseInt(formData.get('arrondissement')),
+                code_postal: parseFloat(formData.get('code_postal')),
+                distance_center_km: parseFloat(formData.get('distance_center_km')),
+                latitude: parseFloat(formData.get('latitude')),
+                longitude: parseFloat(formData.get('longitude')),
+                type_local: formData.get('type_local'),
+                nature_mutation: formData.get('nature_mutation')
+            };
+            
+            // Afficher le loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('error').classList.remove('show');
+            document.getElementById('result').classList.remove('show');
+            
+            try {
+                // Appeler l'API
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Afficher les résultats
+                    document.getElementById('predictionValue').textContent = 
+                        result.prediction_eur_m2.toLocaleString('fr-FR') + ' EUR/m²';
+                    document.getElementById('totalValue').textContent = 
+                        result.prix_total_estime.toLocaleString('fr-FR') + ' EUR';
+                    document.getElementById('surfaceValue').textContent = 
+                        result.surface_m2.toLocaleString('fr-FR') + ' m²';
+                    
+                    document.getElementById('result').classList.add('show');
+                } else {
+                    // Afficher l'erreur
+                    document.getElementById('error').textContent = 'Erreur: ' + result.error;
+                    document.getElementById('error').classList.add('show');
+                }
+            } catch (error) {
+                document.getElementById('error').textContent = 'Erreur: ' + error.message;
+                document.getElementById('error').classList.add('show');
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
