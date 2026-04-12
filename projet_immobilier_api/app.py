@@ -1,14 +1,14 @@
-"""
-API Flask pour prédiction de prix immobilier à Paris
-Endpoint: POST /predict - Prédire le prix au m² d'un bien immobilier
-"""
-
 from flask import Flask, request, jsonify, render_template
 import pickle
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 import os
+
+"""
+API Flask pour prédiction de prix immobilier à Paris
+Endpoint: POST /predict - Prédire le prix au m² d'un bien immobilier
+"""
 
 app = Flask(__name__)
 
@@ -188,6 +188,5 @@ if __name__ == '__main__':
     print("   - Page d'accueil      : GET  http://127.0.0.1:5000/")
     print("   - Prédiction          : POST http://127.0.0.1:5000/predict")
     print("   - Santé de l'API      : GET  http://127.0.0.1:5000/health")
-    print("\n  Appuyez sur CTRL+C pour arrêter le serveur\n")
     
     app.run(debug=True, host='127.0.0.1', port=5000)
