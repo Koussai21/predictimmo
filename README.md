@@ -314,4 +314,4 @@ Retourne l'état du serveur et confirme que le modèle et le scaler sont chargé
 - Intégrer des données de transactions plus récentes
 - Créer des modèles spécialisés par arrondissement
 - Ajouter un intervalle de confiance aux prédictions
-- Implémenter un système de validation croisée time-series
+- Implémenter un système de validation croisée time-serie
